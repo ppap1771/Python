@@ -4,6 +4,21 @@ using namespace std;
 string kw, cipher, encrypt;
 char polyb_square[5][5];
 
+string parse(string answer){
+    int n = answer.length();
+    // cout << n << "\n";
+    string final = "";
+    int k = 0;
+    for(int i = 0; i < n; i++){
+        if(answer[i] != '?'){
+            final += answer[i];
+            k++;
+        }  
+    }
+
+    return final;
+}
+
 string concat(string en_text, char a)
 {
     // pointing to the index of the last character of x
@@ -16,7 +31,7 @@ string ct2(string en_text){
     int n1 = kw.length();
     int n2 = (en_text.length()%n1 == 0)?(en_text.length()/n1) : ((en_text.length()/n1) + 1);
 
-    cout << n1 << " " << n2 << "\n";
+    // cout << n1 << " " << n2 << "\n";
 
     char t2[n2][n1];
     int k = 0, itr = 0;
@@ -41,25 +56,29 @@ string ct2(string en_text){
         
     }
 
-    for (int i = 0; i < n2; i++)
-    {
-        for (int j = 0; j < n1; j++)
-        {
-            cout << t2[i][j] << " ";
-        }
-        cout << "\n";
-    }
+    // for (int i = 0; i < n2; i++)
+    // {
+    //     for (int j = 0; j < n1; j++)
+    //     {
+    //         cout << t2[i][j] << " ";
+    //     }
+    //     cout << "\n";
+    // }
     string kw_t = kw;
     sort(kw_t.begin(), kw_t.end());
 
-    cout << kw_t << "\n"; 
+    // cout << kw_t << "\n"; 
     string en_text1 = "";
 
     for(int i = 0; i < n1; i++){
+        char t1 = kw_t[i];
         for(int j = 0; j < n1; j++){
-            if(kw_t[i] == kw[j]){
-                for(int k = 0; k < n1;k++){
-                    en_text1 = concat(en_text1,t2[j][k]);
+            // cout << t1 << " " << kw[j] << " " << i << " " << j << "\n";
+            if(t1 == kw[j]){
+            
+                for(int k = 0; k < n2; k++){
+                    // cout << t2[k][j] << "\n";
+                    en_text1 = concat(en_text1, t2[k][j]);
                 }
             }
         }
@@ -117,7 +136,7 @@ void polyb_squar_gen(string cipher)
         }
     }
 
-    print_mat(polyb_square);
+    // print_mat(polyb_square);
 }
 
 void solve()
@@ -125,9 +144,10 @@ void solve()
     polyb_squar_gen(cipher);
     string text1 = ct1();
 
-    cout << text1 << "\n";
+    // cout << text1 << "\n";
 
     string text2 = ct2(text1);
+    text2 = parse(text2);
     cout << text2 << "\n";
     return;
 }
