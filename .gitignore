@@ -1,4 +1,5 @@
 .venv/
+.env
 .vscode/
 challenges/.cph/
 *.exe
