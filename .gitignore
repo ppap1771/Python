@@ -3,3 +3,4 @@
 .vscode/
 challenges/.cph/
 *.exe
+__pycache__/
