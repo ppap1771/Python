@@ -4,3 +4,7 @@
 challenges/.cph/
 *.exe
 __pycache__/
+*.pdf
+*.csv
+*.cph
+*.db
