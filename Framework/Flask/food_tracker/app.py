@@ -68,8 +68,11 @@ def index():
 
     return render_template('home.html', results=pretty_results)
 
-@app.route('/view/<date>') #date format = YYYYMMDD
+@app.route('/view/<date>', methods=['POST', 'GET']) #date format = YYYYMMDD
 def view(date):
+
+    if request.method == 'POST':
+        return '<h1>The food item is #{}</h1>'.format(request.form['food_select'])
     db = get_db()
     cur = db.execute('select entry_date from log_date where entry_date = ?', [date])
     result = cur.fetchone()
@@ -77,8 +80,10 @@ def view(date):
     d = datetime.strptime(str(result['entry_date']), '%Y%m%d')
     pretty_date = datetime.strftime(d, '%B %m, %Y')
 
+    food_cur = db.execute('select id, name from food')
+    food_results = food_cur.fetchall()
 
-    return  render_template('day.html', date=pretty_date)
+    return  render_template('day.html', date=pretty_date, food_results=food_results)
 
 @app.route('/food', methods = ['GET', 'POST'])
 def food():
