@@ -46,7 +46,10 @@ def close_db(error):
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-
+    """
+    discrepancy in the dates od main and view routes on the links c=fix that
+    """
+    
     db = get_db()
     if request.method == 'POST':
         date = request.form['date']
@@ -58,15 +61,17 @@ def index():
     
     cur = db.execute('select entry_date from log_date order by entry_date desc')
     results = cur.fetchall()
-    pretty_results = []
+    date_results = []
 
     for i in results:
         i_date = {}
-        d = datetime.strptime(str(i['entry_date']), '%Y%m%d')
-        i_date['entry_date'] = datetime.strftime(d, '%B %d, %Y')
-        pretty_results.append(i_date)
+        i_date['entry_date'] = i['entry_date']
 
-    return render_template('home.html', results=pretty_results)
+        d = datetime.strptime(str(i['entry_date']), '%Y%m%d')
+        i_date['pretty_date'] = datetime.strftime(d, '%B %d, %Y')
+        date_results.append(i_date)
+
+    return render_template('home.html', results=date_results)
 
 @app.route('/view/<date>', methods=['POST', 'GET']) #date format = YYYYMMDD
 def view(date):
@@ -101,7 +106,22 @@ def view(date):
     food_cur = db.execute('select id, name from food')
     food_results = food_cur.fetchall()
 
-    return  render_template('day.html', date=pretty_date, food_results=food_results)
+    log_cur = db.execute('select food.name, food.protein, food.carbohydrates, food.fats, food.calories from log_date join food_logs on food_logs.log_date_id = log_date.id join food on food.id = food_logs.food_id where log_date.entry_date = ?', [date])
+    log_results = log_cur.fetchall()
+
+    totals = {}
+    totals['protein'] = 0
+    totals['carbohydrates'] = 0
+    totals['fats'] = 0
+    totals['calories'] = 0
+
+    for food in log_results:
+        totals['protein'] += food['protein']
+        totals['carbohydrates'] += food['carbohydrates']
+        totals['fats'] += food['fats']
+        totals['calories'] += food['calories']
+
+    return  render_template('day.html', entry_date=date_result['entry_date'], pretty_date=pretty_date, food_results=food_results, log_results=log_results, totals=totals)
 
 @app.route('/food', methods = ['GET', 'POST'])
 def food():
