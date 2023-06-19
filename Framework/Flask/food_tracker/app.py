@@ -70,14 +70,32 @@ def index():
 
 @app.route('/view/<date>', methods=['POST', 'GET']) #date format = YYYYMMDD
 def view(date):
+    """
+        Handles the '/view/<date>' route for viewing and logging food items.
+
+        Args:
+            date (str): The date in the format YYYYMMDD.
+
+        Returns:
+            str: The rendered HTML template for displaying food items and log information.
+
+        Methods:
+            - GET: Retrieves the log information and renders the template for the specified date.
+            - POST: Inserts a new food log entry into the database for the specified date.
+    """
+    
+    db = get_db()
+    cur = db.execute('select id, entry_date from log_date where entry_date = ?', [date])
+    date_result = cur.fetchone()
 
     if request.method == 'POST':
-        return '<h1>The food item is #{}</h1>'.format(request.form['food_select'])
-    db = get_db()
-    cur = db.execute('select entry_date from log_date where entry_date = ?', [date])
-    result = cur.fetchone()
+        # return '<h1>The food item is #{}</h1>'.format(request.form['food_select'])
+        db.execute('insert into food_logs (food_id, log_date_id) values (?, ?)', [int(request.form['food-select']), int(date_result['id'])])
+        db.commit()
+    
+    
 
-    d = datetime.strptime(str(result['entry_date']), '%Y%m%d')
+    d = datetime.strptime(str(date_result['entry_date']), '%Y%m%d')
     pretty_date = datetime.strftime(d, '%B %m, %Y')
 
     food_cur = db.execute('select id, name from food')
