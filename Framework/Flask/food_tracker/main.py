@@ -30,6 +30,7 @@ def index():
     db = get_db()
     if request.method == 'POST':
         date = request.form['date']
+        print(date)
         datetime_object = datetime.strptime(date, '%Y-%m-%d')
         date_database = datetime.strftime(datetime_object, '%Y%m%d')
 
